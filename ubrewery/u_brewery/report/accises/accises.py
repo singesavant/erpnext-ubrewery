@@ -102,20 +102,23 @@ def execute(filters=None):
         # Calculate manufactured quantity in liters
         for sold_item in get_manufactured_items(filters):
                 item_doc = frappe.get_doc("Item", sold_item.item_code)
-                item_name = resolve_item_name(item_doc)
-                qty_manufactured_by_product[(item_name, item_doc.abv)] += convert_to_liters(item_doc, sold_item.qty)
+                if item_doc.abv:
+                        item_name = resolve_item_name(item_doc)
+                        qty_manufactured_by_product[(item_name, item_doc.abv)] += convert_to_liters(item_doc, sold_item.qty)
 
         # Calculate sold quantity in liters
         for sold_item in get_sold_items(filters):
                 item_doc = frappe.get_doc("Item", sold_item.item_code)
-                item_name = resolve_item_name(item_doc)
-                qty_sold_by_product[(item_name, item_doc.abv)] += convert_to_liters(item_doc, sold_item.qty)
+                if item_doc.abv:
+                        item_name = resolve_item_name(item_doc)
+                        qty_sold_by_product[(item_name, item_doc.abv)] += convert_to_liters(item_doc, sold_item.qty)
 
         # Calcule scrapped quantity in liters
         for scrapped_item in get_scrapped_items(filters):
                 item_doc = frappe.get_doc("Item", scrapped_item.item_code)
-                item_name = resolve_item_name(item_doc)
-                qty_scrapped_by_product[(item_name, item_doc.abv)] += convert_to_liters(item_doc, scrapped_item.qty)
+                if item_doc.abv:
+                        item_name = resolve_item_name(item_doc)
+                        qty_scrapped_by_product[(item_name, item_doc.abv)] += convert_to_liters(item_doc, scrapped_item.qty)
 
         # Feed data
         for (item_name, abv), qty_sold in qty_sold_by_product.items():
