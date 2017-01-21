@@ -37,8 +37,6 @@ def get_stock_from_warehouse(filters, scrap=False):
             AND sle.warehouse = warehouse.name
             AND warehouse.is_scrap={scrap}
             AND {conditions}
-            GROUP BY sle.item_code, MONTH('sle.posting_date')
-            order by sle.item_code, sle.posting_date
         """.format(scrap=scrap, conditions=get_conditions(filters, table="sle")), as_dict=1)
 
         return item_stocks
@@ -63,8 +61,6 @@ def get_sold_items(filters):
         sold_items = frappe.db.sql("""
             select si_item.item_code item_code, si_item.qty qty from `tabSales Invoice` si, `tabSales Invoice Item` si_item
             where si.name = si_item.parent and si.docstatus = 1 and {conditions}
-            GROUP BY si_item.item_code, MONTH('posting_date')
-            ORDER BY si_item.item_code, si.posting_date
         """.format(conditions=get_conditions(filters, table="si")), as_dict=1)
 
         return sold_items
