@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include ubrewery *.css
+recursive-include ubrewery *.csv
+recursive-include ubrewery *.html
+recursive-include ubrewery *.ico
+recursive-include ubrewery *.js
+recursive-include ubrewery *.json
+recursive-include ubrewery *.md
+recursive-include ubrewery *.png
+recursive-include ubrewery *.py
+recursive-include ubrewery *.svg
+recursive-include ubrewery *.txt
+recursive-exclude ubrewery *.pyc
