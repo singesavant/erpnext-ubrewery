@@ -51,7 +51,18 @@ def get_manufactured_items(filters):
         """
         From warehouses, get the quantity manufactured
         """
-        return get_stock_from_warehouse(filters, scrap=False)
+        item_stocks = frappe.db.sql("""
+            select sle.item_code item_code, sle.actual_qty qty
+            FROM `tabStock Ledger Entry` sle, `tabStock Entry` se, `tabWarehouse` warehouse
+            WHERE se.docstatus = 1 AND sle.docstatus = 1
+            AND sle.voucher_no = se.name
+            AND sle.warehouse = warehouse.name
+            AND warehouse.is_scrap={scrap}
+            AND {conditions}
+            AND se.purpose = 'Manufacture'
+        """.format(scrap=False, conditions=get_conditions(filters, table="se")), as_dict=1)
+
+        return item_stocks
 
 def get_sold_items(filters):
         """
