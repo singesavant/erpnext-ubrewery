@@ -60,7 +60,7 @@ def get_manufactured_items(filters):
             AND warehouse.is_scrap={scrap}
             AND {conditions}
             AND se.purpose = 'Manufacture'
-        """.format(scrap=False, conditions=get_conditions(filters, table="se")), as_dict=1)
+        """.format(scrap=False, conditions=get_conditions(filters, table="sle")), as_dict=1)
 
         return item_stocks
 
@@ -101,37 +101,36 @@ def execute(filters=None):
         data = []
 
 
-        qty_manufactured_by_product = defaultdict(lambda: 0)
-        qty_sold_by_product = defaultdict(lambda: 0)
-        qty_scrapped_by_product = defaultdict(lambda: 0)
-
+        qty_per_product = defaultdict(lambda: {'manufactured': 0,
+                                               'sold': 0,
+                                               'scrapped': 0})
 
         # Calculate manufactured quantity in liters
         for sold_item in get_manufactured_items(filters):
                 item_doc = frappe.get_doc("Item", sold_item.item_code)
                 if item_doc.abv:
                         item_name = resolve_item_name(item_doc)
-                        qty_manufactured_by_product[(item_name, item_doc.abv)] += convert_to_liters(item_doc, sold_item.qty)
+                        qty_per_product[(item_name, item_doc.abv)]['manufactured'] += convert_to_liters(item_doc, sold_item.qty)
 
         # Calculate sold quantity in liters
         for sold_item in get_sold_items(filters):
                 item_doc = frappe.get_doc("Item", sold_item.item_code)
                 if item_doc.abv:
                         item_name = resolve_item_name(item_doc)
-                        qty_sold_by_product[(item_name, item_doc.abv)] += convert_to_liters(item_doc, sold_item.qty)
+                        qty_per_product[(item_name, item_doc.abv)]['sold'] += convert_to_liters(item_doc, sold_item.qty)
 
         # Calcule scrapped quantity in liters
         for scrapped_item in get_scrapped_items(filters):
                 item_doc = frappe.get_doc("Item", scrapped_item.item_code)
                 if item_doc.abv:
                         item_name = resolve_item_name(item_doc)
-                        qty_scrapped_by_product[(item_name, item_doc.abv)] += convert_to_liters(item_doc, scrapped_item.qty)
+                        qty_per_product[(item_name, item_doc.abv)]['scrapped'] += convert_to_liters(item_doc, scrapped_item.qty)
 
         # Feed data
-        for (item_name, abv), qty_sold in qty_sold_by_product.items():
+        for (item_name, abv), qtties in qty_per_product.items():
                 data.append([item_name, "{0}%".format(abv),
-                             qty_manufactured_by_product[(item_name, abv)],
-                             qty_sold,
-                             qty_scrapped_by_product[(item_name, abv)]])
+                             qtties['manufactured'],
+                             qtties['sold'],
+                             qtties['scrapped']])
 
         return columns, data
