@@ -138,7 +138,7 @@ def execute(filters=None):
                 data.append([item_name, "{0}%".format(abv),
                              qtties['manufactured'],
                              qtties['destroyed'],
-                             qtties['manufactured'] - qtties['destroyed'],
+                             qtties['manufactured'] + qtties['destroyed'],
                              qtties['sold'],
                              qtties['scrapped']])
 
