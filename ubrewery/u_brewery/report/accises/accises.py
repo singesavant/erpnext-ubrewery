@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe import _
 from frappe.utils import flt, cint, getdate
+from frappe.exceptions import DataError
 
 from collections import defaultdict
 
@@ -78,6 +79,8 @@ def get_sold_items(filters):
 
 def convert_to_liters(item, quantity):
         uom = get_conversion_factor(item.item_code, "Litre")
+        if uom is None:
+                raise DataError("Convertion to liters missing for item {0}".format(item.item_code))
         return quantity * uom['conversion_factor']
 
 def resolve_item_name(item):
