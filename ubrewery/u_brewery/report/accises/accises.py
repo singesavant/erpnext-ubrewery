@@ -79,9 +79,10 @@ def get_sold_items(filters):
 
 def convert_to_liters(item, quantity):
         uom = get_conversion_factor(item.item_code, "Litre")
-        if uom is None:
+        conversion_factor = uom.get('conversion_factor', None)
+        if conversion_factor is None:
                 raise DataError("Convertion to liters missing for item {0}".format(item.item_code))
-        return quantity * uom['conversion_factor']
+        return quantity * conversion_factor
 
 def resolve_item_name(item):
         if item.variant_of != None:
