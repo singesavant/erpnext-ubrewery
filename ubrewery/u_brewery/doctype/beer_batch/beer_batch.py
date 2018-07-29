@@ -10,17 +10,41 @@ from datetime import date, timedelta
 
 class BeerBatch(Document):
     def on_submit(self):
-            # Make Beer variants
-            for quantity in self.quantities:
-                    item_variant = frappe.get_doc("Item", quantity.variant_item)
-                    variant_value = item_variant.attributes[0].attribute_value # FIXME, shoudln't be [0]
+        # Make a Stock Entry
+        ste_doc = frappe.get_doc({
+                "doctype": "Stock Entry",
+                "purpose": "Manufacture",
+                "title": "Condition {0}".format(self.beer_recipe)
+        })
 
-                    batch_doc = frappe.get_doc({
-                            "doctype": "Batch",
-                            "batch_id": "{0}-{1}".format(self.batch_no,
-                                                         variant_value),
-                            "item": item_variant.item_code,
-                            "expiry_date": date.today() + timedelta(days=365)
-                    })
+        # Make batches for Item Variants
+        for quantity in self.quantities:
+                item_variant = frappe.get_doc("Item", quantity.variant_item)
+                variant_value = item_variant.attributes[0].attribute_value # FIXME, shoudln't be [0]. We get "75cl" for example
 
-                    batch_doc.insert()
+                # If quantity is zero, skip the variant
+                if quantity.quantity == 0:
+                        continue
+
+                # Create a batch no for this variant
+                batch_doc = frappe.get_doc({
+                        "doctype": "Batch",
+                        "batch_id": "{0}-{1}".format(self.batch_no,
+                                                     variant_value),
+                        "item": item_variant.item_code,
+                        "expiry_date": date.today() + timedelta(days=365) # FIXME: should be configurable
+                })
+
+                batch_doc.insert()
+
+
+                ste_doc.append('items', {
+                        "item_code": item_variant.item_code,
+                        "batch_no": batch_doc.batch_id,
+                        "qty": quantity.quantity,
+                        "t_warehouse": "Produits Finis - SI" # FIXME
+                })
+
+
+        ste_doc.insert()
+        ste_doc.submit()
