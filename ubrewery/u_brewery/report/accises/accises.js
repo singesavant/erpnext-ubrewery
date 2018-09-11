@@ -9,14 +9,14 @@ frappe.query_reports["Accises"] = {
         {
 			      "fieldname":"from_date",
 			      "label": __("From Date"),
-			      "fieldtype": "Date",
+			      "fieldtype": "DateTime",
 			      "default": frappe.defaults.get_default("year_start_date"),
 			      "width": "80"
 		    },
 		    {
 			      "fieldname":"to_date",
 			      "label": __("To Date"),
-			      "fieldtype": "Date",
+			      "fieldtype": "DateTime",
 			      "default": get_today()
 		    },
 		    {
