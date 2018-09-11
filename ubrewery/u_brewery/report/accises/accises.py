@@ -78,7 +78,11 @@ def get_sold_items(filters):
         return sold_items
 
 def convert_to_liters(item, quantity):
-        uom = get_conversion_factor(item.item_code, "Litre")
+        try:
+                uom = get_conversion_factor(item.item_code, "Litre")
+        except:
+                raise DataError("Error while looking up item {0}, aborting.".format(item.item_code))
+
         conversion_factor = uom['conversion_factor']
 
         try:
