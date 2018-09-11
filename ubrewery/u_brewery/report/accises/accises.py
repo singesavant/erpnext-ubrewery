@@ -120,7 +120,11 @@ def execute(filters=None):
 
         # Calculate manufactured quantity in liters
         for sold_item in get_manufactured_items(filters):
-                item_doc = frappe.get_doc("Item", sold_item.item_code)
+                try:
+                        item_doc = frappe.get_doc("Item", sold_item.item_code)
+                except:
+                        raise DataError("Error while looking up item {0}, aborting.".format(item.item_code))
+
                 if item_doc.abv:
                         item_name = resolve_item_name(item_doc)
                         liters = convert_to_liters(item_doc, sold_item.qty)
