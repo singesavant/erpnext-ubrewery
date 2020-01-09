@@ -87,7 +87,7 @@ def convert_to_liters(item, quantity):
 
         try:
                 conversion = quantity * conversion_factor
-        except TypeError, e:
+        except TypeError:
                 raise TypeError("Convertion to liters missing for item {0}".format(item.item_code))
 
         return conversion
