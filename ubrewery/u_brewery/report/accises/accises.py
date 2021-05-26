@@ -159,11 +159,11 @@ def execute(filters=None):
         # Feed data
         for (item_name, abv), qtties in qty_per_product.items():
                 data.append([item_name, "{0}%".format(abv),
-                             qtties['manufactured'],
-                             qtties['destroyed'],
-                             qtties['manufactured'] + qtties['destroyed'],
-                             qtties['sold'],
-                             qtties['returned'],
-                             qtties['scrapped']])
+                             qtties['manufactured']/100,
+                             qtties['destroyed']/100,
+                             qtties['manufactured']/100 + qtties['destroyed']/100,
+                             qtties['sold']/100,
+                             qtties['returned']/100,
+                             qtties['scrapped']/100])
 
         return columns, data
