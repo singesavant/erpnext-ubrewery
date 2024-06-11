@@ -16,8 +16,7 @@ frappe.query_reports["Accises"] = {
 		    {
 			      "fieldname":"to_date",
 			      "label": __("To Date"),
-			      "fieldtype": "Date",
-			      "default": get_today()
+			      "fieldtype": "Date"
 		    },
 		    {
 			      "fieldname":"company",
