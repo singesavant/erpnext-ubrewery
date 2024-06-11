@@ -105,12 +105,12 @@ def execute(filters=None):
         columns = [
                 _("Item") + ":Link/Item:200",
                 _("ABV") + "::50",
-                _("Liters manufactured") + "::100",
-                _("Liters destroyed") + "::100",
-                _("Liters manuf-destroyed") + "::100",
-                _("Liters sold") + "::100",
-                _("Liters returned") + "::100",
-                _("Liters tasting") + "::100"
+                _("hL conditionnés") + "::100",
+                _("hL detruits") + "::100",
+                _("hL condi-det.") + "::100",
+                _("hL vendus") + "::100",
+                _("hL retour") + "::100",
+                _("hL degust") + "::100"
         ]
 
         data = []
@@ -157,13 +157,26 @@ def execute(filters=None):
                         qty_per_product[(item_name, item_doc.abv)]['scrapped'] += convert_to_liters(item_doc, scrapped_item.qty)
 
         # Feed data
+        total_liters_manufactured = 0
+        total_liters_destroyed = 0
+        total_liters_desminusmanuf = 0
+        total_liters_sold = 0
+        total_liters_returned = 0
+        total_liters_scrapped = 0
         for (item_name, abv), qtties in qty_per_product.items():
                 data.append([item_name, "{0}%".format(abv),
-                             qtties['manufactured'],
-                             qtties['destroyed'],
-                             qtties['manufactured'] + qtties['destroyed'],
-                             qtties['sold'],
-                             qtties['returned'],
-                             qtties['scrapped']])
+                             round(qtties['manufactured']/100, 3),
+                             round(qtties['destroyed']/100, 3),
+                             round(qtties['manufactured']/100 + qtties['destroyed']/100, 3),
+                             round(qtties['sold']/100, 3),
+                             round(qtties['returned']/100, 3),
+                             round(qtties['scrapped']/100, 3)])
+                total_liters_manufactured += qtties['manufactured']
+                total_liters_destroyed += qtties['destroyed']
+                total_liters_desminusmanuf += (qtties['manufactured'] + qtties['destroyed'])
+                total_liters_sold += qtties['sold']
+                total_liters_returned += qtties['returned']
+                total_liters_scrapped += qtties['scrapped']
+        data.append(["Total", "/", total_liters_manufactured/100, total_liters_destroyed/100, total_liters_desminusmanuf/100, total_liters_sold/100, total_liters_returned/100, total_liters_scrapped/100])
 
         return columns, data
